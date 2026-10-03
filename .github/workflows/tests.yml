@@ -7,26 +7,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  pester:
-    name: Pester (${{ matrix.shell }})
+  windows-powershell:
+    name: Pester (Windows PowerShell 5.1)
     runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # powershell = Windows PowerShell 5.1, pwsh = PowerShell 7
-        # proves requirement T6 (runs on both editions).
-        shell: [ powershell, pwsh ]
+    defaults:
+      run:
+        shell: powershell
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Pester 5
-        shell: ${{ matrix.shell }}
         run: |
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
           Install-Module Pester -MinimumVersion 5.5.0 -Force -SkipPublisherCheck -Scope CurrentUser
-
       - name: Parse-check all scripts
-        shell: ${{ matrix.shell }}
         run: |
           $bad = 0
           Get-ChildItem -Recurse -Include *.ps1,*.psm1 | ForEach-Object {
@@ -35,23 +28,41 @@ jobs:
             if ($errs.Count) { $bad++; Write-Host "SYNTAX: $($_.Name)"; $errs | ForEach-Object { Write-Host "  $($_.Message)" } }
           }
           if ($bad) { throw "$bad file(s) failed to parse." }
-
       - name: Run Pester
-        shell: ${{ matrix.shell }}
         run: |
           Import-Module Pester -MinimumVersion 5.0 -Force
           $cfg = New-PesterConfiguration
           $cfg.Run.Path = './tests/E8Toolkit.Tests.ps1'
           $cfg.Run.Exit = $true
           $cfg.Output.Verbosity = 'Detailed'
-          $cfg.TestResult.Enabled = $true
-          $cfg.TestResult.OutputPath = "testresults-${{ matrix.shell }}.xml"
           Invoke-Pester -Configuration $cfg
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pester-results-${{ matrix.shell }}
-          path: testresults-${{ matrix.shell }}.xml
-          if-no-files-found: ignore
+  windows-pwsh:
+    name: Pester (PowerShell 7)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Pester 5
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module Pester -MinimumVersion 5.5.0 -Force -SkipPublisherCheck -Scope CurrentUser
+      - name: Parse-check all scripts
+        run: |
+          $bad = 0
+          Get-ChildItem -Recurse -Include *.ps1,*.psm1 | ForEach-Object {
+            $errs = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errs)
+            if ($errs.Count) { $bad++; Write-Host "SYNTAX: $($_.Name)"; $errs | ForEach-Object { Write-Host "  $($_.Message)" } }
+          }
+          if ($bad) { throw "$bad file(s) failed to parse." }
+      - name: Run Pester
+        run: |
+          Import-Module Pester -MinimumVersion 5.0 -Force
+          $cfg = New-PesterConfiguration
+          $cfg.Run.Path = './tests/E8Toolkit.Tests.ps1'
+          $cfg.Run.Exit = $true
+          $cfg.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $cfg
