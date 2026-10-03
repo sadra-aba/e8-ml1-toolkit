@@ -1,0 +1,16 @@
+# run artefacts
+output/
+*.log
+
+# never commit real tenant values or secrets
+config/lab.config.local.json
+*.pfx
+*.cer
+*.pem
+.token*
+*.tokencache
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vs/

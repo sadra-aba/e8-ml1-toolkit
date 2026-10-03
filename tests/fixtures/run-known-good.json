@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "studentName": "Sadra Hosseinpooraminabad",
+    "studentId": "26103109",
+    "tenantDomain": "SadraLabs.onmicrosoft.com",
+    "assessingAccount": "admin@SadraLabs.onmicrosoft.com",
+    "collectedUtc": "2026-10-03T12:00:00Z",
+    "collectedLocal": "2026-10-03 23:00:00 (Sydney)",
+    "detectedTier": "Business Premium",
+    "securityDefaults": false,
+    "toolkitVersion": "e8-ml1-toolkit/0.4",
+    "mode": "Delegated"
+  },
+  "results": [
+    { "controlId": "E8-ML1-MFA", "strategy": "Multi-factor authentication", "maturityLevel": 1, "verdict": "Compliant", "verdictReason": "All 6 assessable accounts are covered by an MFA-enforcing Conditional Access policy.", "automatability": "Automated", "assessmentMode": "ConditionalAccess", "coverage": { "coveragePercent": 100, "assessableAccounts": 6, "coveredAccounts": 6 }, "evidence": {}, "attestationQuestions": [], "tenantDomain": "SadraLabs.onmicrosoft.com", "collectedUtc": "2026-10-03T12:00:00Z" },
+    { "controlId": "E8-ML1-ADMIN", "strategy": "Restrict administrative privileges", "maturityLevel": 1, "verdict": "Partial", "verdictReason": "2 Global Administrators inventoried, within ceiling; process items need attestation.", "automatability": "PartiallyAutomated", "assessmentMode": "RoleInventory", "coverage": { "globalAdministrators": 2 }, "evidence": {}, "attestationQuestions": ["Are privileged access requests validated?"], "tenantDomain": "SadraLabs.onmicrosoft.com", "collectedUtc": "2026-10-03T12:00:00Z" }
+  ]
+}

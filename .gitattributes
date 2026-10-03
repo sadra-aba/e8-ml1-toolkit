@@ -1,0 +1,6 @@
+# Normalise line endings. PowerShell is happy with LF; keep the repo consistent.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.cer binary
+*.pfx binary
