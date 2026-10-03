@@ -74,14 +74,14 @@ if ($gaCount -eq 0) {
                 "assessment could not read role membership.")
 } elseif ($signalFail) {
     $verdict = 'NonCompliant'
-    $reason  = ("{0} accounts hold Global Administrator, exceeding the guidance ceiling of {1}. " +
+    $reason  = (("{0} accounts hold Global Administrator, exceeding the guidance ceiling of {1}. " +
                 "Excess standing privilege increases the administrative attack surface. " +
-                "Remaining ML1 requirements are process-based and require attestation." -f $gaCount, $gaThreshold)
+                "Remaining ML1 requirements are process-based and require attestation.") -f $gaCount, $gaThreshold)
 } else {
     $verdict = 'Partial'
-    $reason  = ("{0} Global Administrator account(s) and {1} distinct privileged account(s) were " +
+    $reason  = (("{0} Global Administrator account(s) and {1} distinct privileged account(s) were " +
                 "inventoried, within the guidance ceiling. The automatable portion looks sound; the " +
-                "ML1 process requirements below require attestation before this control can be called met." `
+                "ML1 process requirements below require attestation before this control can be called met.") `
                 -f $gaCount, $distinctPrivileged)
 }
 

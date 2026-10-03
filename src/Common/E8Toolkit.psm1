@@ -40,8 +40,8 @@ function Get-E8Config {
 
     $placeholders = [regex]::Matches($raw, 'REPLACE_ME')
     if ($placeholders.Count -gt 0) {
-        throw ("E8: configuration still contains {0} placeholder value(s) (REPLACE_ME). " +
-               "Edit '{1}' before running." -f $placeholders.Count, $Path)
+        throw (("E8: configuration still contains {0} placeholder value(s) (REPLACE_ME). " +
+               "Edit '{1}' before running.") -f $placeholders.Count, $Path)
     }
 
     # Normalise output directory to an absolute path.
@@ -145,8 +145,8 @@ function Assert-E8Tenant {
     }
     $want = $Config.tenant.primaryDomain
     if ($verified -notcontains $want) {
-        throw ("E8 SAFETY STOP: configured primary domain '{0}' is NOT among the " +
-               "signed-in tenant's verified domains ({1}). Aborting." -f $want, ($verified -join ', '))
+        throw (("E8 SAFETY STOP: configured primary domain '{0}' is NOT among the " +
+               "signed-in tenant's verified domains ({1}). Aborting.") -f $want, ($verified -join ', '))
     }
     Write-Verbose "Tenant verified: '$want' present in signed-in tenant."
     return $true
@@ -225,8 +225,8 @@ function Get-E8AssessablePopulation {
     $bgUpn = $Config.breakGlass.userPrincipalName
     $bg = $enabledMembers | Where-Object { $_.UserPrincipalName -eq $bgUpn } | Select-Object -First 1
     if (-not $bg) {
-        throw ("E8 SAFETY STOP: break-glass account '{0}' not found among enabled member users. " +
-               "Cannot safely proceed." -f $bgUpn)
+        throw (("E8 SAFETY STOP: break-glass account '{0}' not found among enabled member users. " +
+               "Cannot safely proceed.") -f $bgUpn)
     }
 
     $assessable = @($enabledMembers | Where-Object { $_.Id -ne $bg.Id })

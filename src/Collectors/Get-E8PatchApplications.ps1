@@ -32,9 +32,9 @@ if (-not $License) { $License = Get-E8LicenseContext }
 if (-not $License.intune -and -not $License.defenderForBusiness) {
     return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict 'Blocked' `
         -Automatability 'LicensingBlocked' -AssessmentMode 'LicenseCheck' -TenantDomain $domain `
-        -VerdictReason ("Neither Intune nor Defender for Business is licensed on this tenant " +
+        -VerdictReason (("Neither Intune nor Defender for Business is licensed on this tenant " +
             "(detected tier: {0}). Automated application patch assessment cannot be performed. " +
-            "This is a purchasing decision, not a configuration failure." -f $License.detectedTier) `
+            "This is a purchasing decision, not a configuration failure.") -f $License.detectedTier) `
         -Coverage @{ detectedTier = $License.detectedTier; intune = $License.intune; defenderForBusiness = $License.defenderForBusiness }
 }
 
@@ -58,9 +58,9 @@ if (-not $assetDiscovery) {
                 "asset discovery to drive application patching. Enrol devices and confirm patch windows.")
 } else {
     $verdict = 'Partial'
-    $reason  = ("{0} Intune-managed device(s) and {1} compliance policy/policies provide asset " +
+    $reason  = (("{0} Intune-managed device(s) and {1} compliance policy/policies provide asset " +
                 "discovery and a configuration baseline. Patch-age evidence (apps patched within the " +
-                "ML1 window) requires Defender for Business TVM data or attestation." -f $deviceCount, $compliancePolicies)
+                "ML1 window) requires Defender for Business TVM data or attestation.") -f $deviceCount, $compliancePolicies)
 }
 
 return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict $verdict `

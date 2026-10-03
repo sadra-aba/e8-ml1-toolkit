@@ -27,9 +27,9 @@ if (-not $License) { $License = Get-E8LicenseContext }
 if (-not $License.intune) {
     return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict 'Blocked' `
         -Automatability 'LicensingBlocked' -AssessmentMode 'LicenseCheck' -TenantDomain $domain `
-        -VerdictReason ("Intune is not licensed on this tenant (detected tier: {0}). Browser and user " +
+        -VerdictReason (("Intune is not licensed on this tenant (detected tier: {0}). Browser and user " +
             "application hardening is enforced through Intune policy, unavailable at this tier. This is a " +
-            "purchasing decision, not a configuration failure." -f $License.detectedTier) `
+            "purchasing decision, not a configuration failure.") -f $License.detectedTier) `
         -Coverage @{ detectedTier = $License.detectedTier; intune = $License.intune }
 }
 
@@ -60,9 +60,9 @@ if ($found -eq 0) {
                 "browsers to block internet Java and web ads, IE11 disabled, and locked browser settings.")
 } else {
     $verdict = 'Partial'
-    $reason  = ("{0} candidate hardening policy/policies were found. Existence is confirmed; that the " +
+    $reason  = (("{0} candidate hardening policy/policies were found. Existence is confirmed; that the " +
                 "specific ML1 settings are applied and enforced on endpoints requires device-state review " +
-                "or attestation." -f $found)
+                "or attestation.") -f $found)
 }
 
 return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict $verdict `

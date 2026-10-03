@@ -39,7 +39,14 @@ if (-not (Get-Module -ListAvailable -Name Microsoft.Graph.Authentication)) {
 Import-Module Microsoft.Graph.Authentication -ErrorAction Stop
 
 # --- connect ---
-if ($Mode -eq 'AppOnly') {
+# Reuse an existing Graph session if one is already established (avoids a second
+# interactive sign-in when a launcher has already connected in this process).
+$existingCtx = $null
+try { $existingCtx = Get-MgContext -ErrorAction SilentlyContinue } catch {}
+if ($existingCtx -and $existingCtx.Account) {
+    if (-not $Quiet) { Write-Host "E8: reusing existing Graph session for $($existingCtx.Account)." }
+}
+elseif ($Mode -eq 'AppOnly') {
     $clientId = $cfg.auth.appOnly.clientId
     $tenantId = $cfg.tenant.tenantId
     $thumb    = $cfg.auth.appOnly.certificateThumbprint

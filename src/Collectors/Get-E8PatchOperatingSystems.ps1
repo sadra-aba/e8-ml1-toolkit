@@ -28,9 +28,9 @@ if (-not $License) { $License = Get-E8LicenseContext }
 if (-not $License.intune) {
     return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict 'Blocked' `
         -Automatability 'LicensingBlocked' -AssessmentMode 'LicenseCheck' -TenantDomain $domain `
-        -VerdictReason ("Intune is not licensed on this tenant (detected tier: {0}), so operating " +
+        -VerdictReason (("Intune is not licensed on this tenant (detected tier: {0}), so operating " +
             "system patch state cannot be assessed centrally. This is a purchasing decision, not a " +
-            "configuration failure." -f $License.detectedTier) `
+            "configuration failure.") -f $License.detectedTier) `
         -Coverage @{ detectedTier = $License.detectedTier; intune = $License.intune }
 }
 
@@ -58,13 +58,13 @@ if ($deviceCount -eq 0) {
     $reason  = "Intune is licensed but no managed devices were found, so OS patch state cannot be confirmed. Enrol devices."
 } elseif ($updatePolicies -eq 0) {
     $verdict = 'Partial'
-    $reason  = ("{0} managed device(s) are enrolled but no Windows update ring/policy was detected. " +
-                "Without a managed update policy, patch windows rely on local configuration and attestation." -f $deviceCount)
+    $reason  = (("{0} managed device(s) are enrolled but no Windows update ring/policy was detected. " +
+                "Without a managed update policy, patch windows rely on local configuration and attestation.") -f $deviceCount)
 } else {
     $verdict = 'Partial'
-    $reason  = ("{0} managed device(s) and {1} update policy/policies are present, giving central OS " +
+    $reason  = (("{0} managed device(s) and {1} update policy/policies are present, giving central OS " +
                 "patch management. Confirmation that patches meet the ML1 windows and that no " +
-                "unsupported OS remains requires device update-state review or attestation." -f $deviceCount, $updatePolicies)
+                "unsupported OS remains requires device update-state review or attestation.") -f $deviceCount, $updatePolicies)
 }
 
 return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict $verdict `

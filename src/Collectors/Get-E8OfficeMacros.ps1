@@ -28,9 +28,9 @@ if (-not $License) { $License = Get-E8LicenseContext }
 if (-not $License.intune) {
     return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict 'Blocked' `
         -Automatability 'LicensingBlocked' -AssessmentMode 'LicenseCheck' -TenantDomain $domain `
-        -VerdictReason ("Intune is not licensed on this tenant (detected tier: {0}). Office macro " +
+        -VerdictReason (("Intune is not licensed on this tenant (detected tier: {0}). Office macro " +
             "settings are enforced through Intune policy, which is unavailable at this tier. This is a " +
-            "purchasing decision, not a configuration failure." -f $License.detectedTier) `
+            "purchasing decision, not a configuration failure.") -f $License.detectedTier) `
         -Coverage @{ detectedTier = $License.detectedTier; intune = $License.intune }
 }
 
@@ -63,10 +63,10 @@ if ($found -eq 0) {
                 "(especially from the internet) to be blocked by enforced policy.")
 } else {
     $verdict = 'Partial'
-    $reason  = ("{0} Intune policy/policies referencing Office macros were found. Policy existence is " +
+    $reason  = (("{0} Intune policy/policies referencing Office macros were found. Policy existence is " +
                 "confirmed; that each ML1 macro setting (block internet macros, AV scanning, users " +
                 "cannot change settings) is set correctly and enforced on endpoints requires device-state " +
-                "review or attestation." -f $found)
+                "review or attestation.") -f $found)
 }
 
 return New-E8Verdict -ControlId $id -Strategy $strategy -Verdict $verdict `

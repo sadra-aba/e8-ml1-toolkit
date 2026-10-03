@@ -139,6 +139,21 @@ Describe 'Scope lists' {
     }
 }
 
+Describe 'Format-string safety (regression)' {
+    # Guards against the -f precedence bug: ("...{0}..." + "...") -f $x leaves the
+    # {0} in the first piece unsubstituted. The fix is (("..." + "...") -f $x).
+    It 'no collector or module builds a concatenated format string with a single paren' {
+        $files = Get-ChildItem (Join-Path $ToolkitRoot 'src') -Recurse -Include *.ps1,*.psm1
+        $pattern = '(?<!\()\("[^"]*\{\d\}[^"]*"\s*\+'
+        $offenders = @()
+        foreach ($f in $files) {
+            $text = Get-Content $f.FullName -Raw
+            if ([regex]::IsMatch($text, $pattern)) { $offenders += $f.Name }
+        }
+        $offenders -join ',' | Should -Be ''
+    }
+}
+
 Describe 'New-EvidencePack rendering' {
     It 'renders the known-good fixture with a Compliant badge and no placeholders' {
         $out = Join-Path $TestDrive 'good.html'

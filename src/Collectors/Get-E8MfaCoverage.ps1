@@ -93,12 +93,12 @@ if ($enforcing.Count -eq 0) {
                 "All user sign-ins can complete with a password alone.")
 } elseif ($pct -ge 100) {
     $verdict = 'Compliant'
-    $reason  = ("All {0} assessable account(s) are covered by an enabled Conditional Access " +
-                "policy requiring multi-factor authentication." -f $assessableCount)
+    $reason  = (("All {0} assessable account(s) are covered by an enabled Conditional Access " +
+                "policy requiring multi-factor authentication.") -f $assessableCount)
 } elseif ($pct -gt 0) {
     $verdict = 'Partial'
-    $reason  = ("{0} of {1} assessable account(s) are covered by an MFA-enforcing Conditional " +
-                "Access policy; {2} remain uncovered." -f $coveredCount, $assessableCount, $uncovered.Count)
+    $reason  = (("{0} of {1} assessable account(s) are covered by an MFA-enforcing Conditional " +
+                "Access policy; {2} remain uncovered.") -f $coveredCount, $assessableCount, $uncovered.Count)
 } else {
     $verdict = 'NonCompliant'
     $reason  = ("An MFA-enforcing policy exists but covers none of the {0} assessable accounts." -f $assessableCount)

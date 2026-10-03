@@ -41,8 +41,8 @@ $verdict = 'NotAssessed'
 $reason  = ("Application control (allow-listing) is enforced on endpoints via WDAC/AppLocker and is " +
             "not visible through Microsoft Graph. This control is assessed by attestation. " )
 if (@($asrSignals).Count -gt 0) {
-    $reason += ("{0} related endpoint policy/policies were detected as a supporting signal, but these " +
-                "do not by themselves satisfy ML1 application control." -f @($asrSignals).Count)
+    $reason += (("{0} related endpoint policy/policies were detected as a supporting signal, but these " +
+                "do not by themselves satisfy ML1 application control.") -f @($asrSignals).Count)
 } else {
     $reason += "No supporting endpoint policy was detected via Graph."
 }
