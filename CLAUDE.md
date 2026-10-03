@@ -83,7 +83,9 @@ Install-Module Microsoft.Graph -Scope CurrentUser
   poll for directory propagation rather than a fixed sleep.
 - Collectors 3–6 confirm policy/asset *existence*; value-level and endpoint
   enforcement still need Defender for Business TVM data or attestation.
-- No Pester tests yet — add fixtures (known-good / known-bad JSON) and assert verdicts.
+- Pester suite lives in `tests/` (Pester 5/6, dashed `Should -Be` syntax) with
+  known-good/known-bad fixtures. CI (`.github/workflows/tests.yml`) runs it on both
+  Windows PowerShell 5.1 and PowerShell 7 on every push/PR.
 - `Get-E8LicenseContext` SKU matching is heuristic; verify SkuPartNumbers against the
   real tenant.
 ```

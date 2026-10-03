@@ -1,5 +1,7 @@
 # E8 ML1 Toolkit
 
+[![tests](https://github.com/sadra-aba/e8-ml1-toolkit/actions/workflows/tests.yml/badge.svg)](https://github.com/sadra-aba/e8-ml1-toolkit/actions/workflows/tests.yml)
+
 Automated **Essential Eight Maturity Level 1** assessment and **evidence pack**
 generator for **Microsoft 365 Business Premium** tenants.
 
@@ -30,7 +32,8 @@ Install-Module Microsoft.Graph -Scope CurrentUser   # one-time
 # edit config/lab.config.json (remove every REPLACE_ME)
 .\Invoke-E8Assessment.ps1                            # safe full assessment -> output/
 .\labs\Lab01-MFA\Invoke-Lab01.ps1 -ConfirmWeaken     # MFA before/after evidence
-Invoke-Pester -Path .\tests\E8Toolkit.Tests.ps1      # 22 unit tests
+Install-Module Pester -MinimumVersion 5.5 -Scope CurrentUser -SkipPublisherCheck
+Invoke-Pester -Path .\tests\E8Toolkit.Tests.ps1      # 22 unit tests (Pester 5+)
 ```
 Full instructions: [docs/QUICKSTART-LIVE-RUN.md](docs/QUICKSTART-LIVE-RUN.md).
 Project conventions and hard rules: [CLAUDE.md](CLAUDE.md).
