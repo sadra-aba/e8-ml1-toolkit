@@ -91,7 +91,52 @@ script before the tests, so a syntax error cannot reach the main branch unnotice
 | S5 — a second operator can reproduce a run | Not tested | A copy-paste live-run quickstart now exists; a second person has still to attempt it |
 | S6 — evidence pack contains no credentials | Met | Met |
 
-The qualifier on S3 and S4 is worth keeping in view. The eight collectors and the
-licensing-block logic are written and unit-tested, but they have not yet been run
-against a live tenant. That run is the next step, and it is the point where the
-classifications stop being asserted and start being demonstrated.
+## 10.9 First live-tenant run
+
+The eight collectors were then run end to end against the live lab tenant
+(SadraLabs.onmicrosoft.com, Business Premium). The pre-flight confirmed the tier and
+that Conditional Access, Intune and Defender for Business are all licensed, with
+Security Defaults disabled. The results:
+
+| Strategy | Verdict | Basis |
+|----------|---------|-------|
+| Multi-factor authentication | Compliant | 6 of 6 assessable accounts covered by one enforcing Conditional Access policy |
+| Restrict administrative privileges | Partial | one Global Administrator (within the guidance ceiling); process requirements left to attestation |
+| Patch applications | NonCompliant | Intune licensed but no managed devices enrolled |
+| Patch operating systems | NonCompliant | no managed devices or update policy |
+| Configure Microsoft Office macro settings | NonCompliant | no macro policy configured |
+| User application hardening | NonCompliant | no browser/hardening policy configured |
+| Application control | NotAssessed | endpoint-enforced; attestation only |
+| Regular backups | NotAssessed | not determinable from tenant configuration; attestation only |
+
+The run was also the first real test of the collectors' output, and it earned its
+keep: it exposed a formatting defect that the unit tests had not. Several verdict
+reasons were emitting literal `{0}` placeholders instead of the counts they were meant
+to carry, because a PowerShell format expression was binding to only the last piece of
+a concatenated string. The fix was small, but the lesson is the same one Section 10.3
+drew about runtime compatibility: some faults only appear when the code actually runs
+against real data. A static regression test now rejects the specific pattern, so it
+cannot return unnoticed.
+
+One result deserves emphasis because it bears on the project's central argument. The
+four NonCompliant controls came back NonCompliant and not LicensingBlocked, which is
+correct: on Business Premium, Intune and Defender are licensed, so those controls are
+assessable and simply not configured. The licensing-blocked path is therefore not
+exercised on a Premium tenant at all. Demonstrating criterion S4 requires running the
+same collectors against a Business Standard tenant, where the licence genuinely is
+absent, and that is the comparison the licensing-ceiling analysis will rest on.
+
+## 10.10 Updated status against the success criteria
+
+| Criterion | At Milestone B | Now |
+|-----------|----------------|-----|
+| S1 — assessment produces valid JSON and HTML | Met | Met, demonstrated against a live tenant |
+| S2 — the cycle produces a measurable verdict change | Met | Met (MFA 0% to 100% recorded earlier) |
+| S3 — at least four strategies fully automated | One of eight | Eight run live; MFA fully automated, the rest returning honest graded or attestation verdicts |
+| S4 — at least one control correctly identified as licensing-blocked | Not yet reached | Logic implemented and unit-tested; not triggered on Premium, so demonstration awaits a Business Standard tenant |
+| S5 — a second operator can reproduce a run | Not tested | Quickstart exists; a second person has still to attempt it |
+| S6 — evidence pack contains no credentials | Met | Met (verified on the live pack) |
+
+The honest qualifier now sits on S4 alone. Everything else has been demonstrated end
+to end against a real tenant; S4's licensing-blocked branch is written and tested but,
+by the nature of the finding, can only be shown on a tenant that lacks the licence.
