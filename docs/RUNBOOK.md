@@ -9,6 +9,11 @@
 - **Security Defaults disabled** (mutually exclusive with Conditional Access).
 
 ## Configure
+Copy the template, then edit your private copy (the live `lab.config.json` is
+git-ignored so real tenant values never get committed):
+```powershell
+Copy-Item config/lab.config.example.json config/lab.config.json
+```
 Edit `config/lab.config.json` and remove **every** `REPLACE_ME`:
 - `tenant.primaryDomain`, `tenant.tenantId`
 - `breakGlass.userPrincipalName` — the emergency access account, excluded from MFA

@@ -1,0 +1,33 @@
+{
+  "$schema": "./lab.config.schema.json",
+  "tenant": {
+    "primaryDomain": "REPLACE_ME.onmicrosoft.com",
+    "tenantId": ""
+  },
+  "operator": {
+    "studentName": "Sadra Hosseinpooraminabad",
+    "studentId": "26103109"
+  },
+  "breakGlass": {
+    "description": "Emergency access (break-glass) account. Excluded from MFA enforcement and from the assessable population. MUST resolve before any policy is written.",
+    "userPrincipalName": ""
+  },
+  "auth": {
+    "mode": "Delegated",
+    "appOnly": {
+      "clientId": "",
+      "certificateThumbprint": "",
+      "clientSecretEnvVar": "E8_CLIENT_SECRET"
+    }
+  },
+  "lab": {
+    "syntheticUserPrefix": "e8lab",
+    "syntheticUserCount": 6,
+    "syntheticGroupName": "E8 Lab (synthetic)",
+    "labPolicyPrefix": "E8-Lab-",
+    "propagationWaitSeconds": 30
+  },
+  "output": {
+    "directory": "./output"
+  }
+}

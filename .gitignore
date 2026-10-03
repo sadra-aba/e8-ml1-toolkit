@@ -3,6 +3,8 @@ output/
 *.log
 
 # never commit real tenant values or secrets
+# the live config is created locally from lab.config.example.json
+config/lab.config.json
 config/lab.config.local.json
 *.pfx
 *.cer
