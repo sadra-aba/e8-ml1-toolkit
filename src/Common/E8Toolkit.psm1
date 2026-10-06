@@ -7,7 +7,7 @@
       * Every collector returns the SAME verdict shape via New-E8Verdict.
       * "Blocked" (cannot be assessed/configured at this licensing tier) is never
         conflated with "NonCompliant" (assessable, and failing).
-      * Runs on BOTH Windows PowerShell 5.1 and PowerShell 7 — so no ternary,
+      * Runs on BOTH Windows PowerShell 5.1 and PowerShell 7  so no ternary,
         no null-coalescing, no 3-arg Join-Path, and array context is forced with @().
 #>
 

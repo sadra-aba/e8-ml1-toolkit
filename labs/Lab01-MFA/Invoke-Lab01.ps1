@@ -1,5 +1,5 @@
 <#
-    Invoke-Lab01.ps1  —  Multi-factor authentication (Essential Eight ML1)
+    Invoke-Lab01.ps1    Multi-factor authentication (Essential Eight ML1)
     The four-stage validation cycle: WEAKEN -> ASSESS -> REMEDIATE -> RE-ASSESS.
 
     *** THIS SCRIPT DELIBERATELY WEAKENS SECURITY CONTROLS IN THE TENANT. ***
@@ -19,7 +19,7 @@ param(
     [string] $ConfigPath,
     [switch] $ConfirmWeaken,
     [switch] $SkipSeed,
-    [int]    $PropagationTimeoutSeconds = 120
+    [int]    $PropagationTimeoutSeconds = 180
 )
 
 $ErrorActionPreference = 'Stop'
@@ -77,26 +77,28 @@ function Get-LabEnforcingPolicies {
 
 # ========================= STAGE 1: WEAKEN =========================
 Write-Host ""
-Write-Host "[1/4] WEAKEN — removing any enforcing lab MFA policy ..."
+Write-Host "[1/4] WEAKEN  removing any enforcing lab MFA policy ..."
 $existing = Get-LabEnforcingPolicies
 foreach ($p in $existing) {
     Write-Host ("   removing policy '{0}' ({1})" -f $p.DisplayName, $p.Id)
     Remove-MgIdentityConditionalAccessPolicy -ConditionalAccessPolicyId $p.Id -ErrorAction Stop
 }
-$gone = Wait-E8Condition -Activity 'Weaken propagation' -TimeoutSeconds $PropagationTimeoutSeconds -Condition {
-    (Get-LabEnforcingPolicies).Count -eq 0
+# Poll on the MEASURED coverage (same read path as the verdict), not the policy
+# list, to defeat directory replication lag across Graph replicas.
+$gone = Wait-E8Condition -Activity 'Weaken propagation (coverage 0)' -TimeoutSeconds $PropagationTimeoutSeconds -PollSeconds 10 -Condition {
+    (& $mfaScript -Config $cfg -SecurityDefaultsEnabled $false).coverage.coveragePercent -eq 0
 }
-if (-not $gone) { Write-Warning "Lab enforcing policies may not have fully propagated as removed." }
+if (-not $gone) { Write-Warning "MFA coverage did not reach 0% within the timeout; recording the current state anyway." }
 
 # ========================= STAGE 2: ASSESS (before) =========================
-Write-Host "[2/4] ASSESS — measuring pre-remediation state ..."
+Write-Host "[2/4] ASSESS  measuring pre-remediation state ..."
 $before = & $mfaScript -Config $cfg -SecurityDefaultsEnabled $false
 $beforePath = [IO.Path]::Combine($outDir, 'lab01-mfa-before.json')
 $before | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $beforePath -Encoding UTF8
 Write-Host ("   before: {0} / {1}% coverage" -f $before.verdict, $before.coverage.coveragePercent)
 
 # ========================= STAGE 3: REMEDIATE =========================
-Write-Host "[3/4] REMEDIATE — creating MFA policy (break-glass excluded) ..."
+Write-Host "[3/4] REMEDIATE  creating MFA policy (break-glass excluded) ..."
 $policyName = ($prefix + '01 Require MFA for all users')
 $conditions = @{
     Applications = @{ IncludeApplications = @('All') }
@@ -109,14 +111,13 @@ $new = New-MgIdentityConditionalAccessPolicy -DisplayName $policyName -State 'en
     -Conditions $conditions -GrantControls $grant -ErrorAction Stop
 Write-Host ("   created '{0}' ({1}); break-glass {2} excluded" -f $policyName, $new.Id, $bg.Id)
 
-$active = Wait-E8Condition -Activity 'Remediation propagation' -TimeoutSeconds $PropagationTimeoutSeconds -Condition {
-    $p = Get-MgIdentityConditionalAccessPolicy -ConditionalAccessPolicyId $new.Id -ErrorAction SilentlyContinue
-    ($p -and $p.State -eq 'enabled')
+$active = Wait-E8Condition -Activity 'Remediation propagation (coverage 100)' -TimeoutSeconds $PropagationTimeoutSeconds -PollSeconds 10 -Condition {
+    (& $mfaScript -Config $cfg -SecurityDefaultsEnabled $false).coverage.coveragePercent -ge 100
 }
-if (-not $active) { Write-Warning "Remediation policy may not have fully propagated as enabled." }
+if (-not $active) { Write-Warning "MFA coverage did not reach 100% within the timeout; recording the current state anyway." }
 
 # ========================= STAGE 4: RE-ASSESS (after) =========================
-Write-Host "[4/4] RE-ASSESS — measuring post-remediation state (same collector) ..."
+Write-Host "[4/4] RE-ASSESS  measuring post-remediation state (same collector) ..."
 $after = & $mfaScript -Config $cfg -SecurityDefaultsEnabled $false
 $afterPath = [IO.Path]::Combine($outDir, 'lab01-mfa-after.json')
 $after | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $afterPath -Encoding UTF8

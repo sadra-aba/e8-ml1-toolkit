@@ -1,7 +1,7 @@
 <#
     Initialize-LabTenant.ps1
     Seed synthetic lab objects, idempotently: one security group and N synthetic
-    member users (e8labNN). Safe to re-run — existing objects are reused, not
+    member users (e8labNN). Safe to re-run  existing objects are reused, not
     duplicated. Passwords are generated in memory and never written anywhere (T8).
 
     This script WRITES to the tenant. It only creates clearly-synthetic objects
