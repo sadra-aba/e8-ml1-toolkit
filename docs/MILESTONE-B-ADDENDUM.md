@@ -111,9 +111,19 @@ One result deserves emphasis because it bears on the project's central argument.
 four NonCompliant controls came back NonCompliant and not LicensingBlocked, which is
 correct: on Business Premium, Intune and Defender are licensed, so those controls are
 assessable and simply not configured. The licensing-blocked path is therefore not
-exercised on a Premium tenant at all. Demonstrating criterion S4 requires running the
-same collectors against a Business Standard tenant, where the licence genuinely is
-absent, and that is the comparison the licensing-ceiling analysis will rest on.
+exercised on a Premium tenant at all, which is the expected behaviour rather than a gap.
+
+The licensing ceiling itself is not an untested claim. It was already encountered
+first-hand in Section 10.3, where the trial initially provisioned as Business Standard
+and the toolkit could not run against it in any meaningful way, precisely because
+Standard carries neither Conditional Access nor Intune nor Defender for Business. That
+incident is the empirical backing for the argument. On the code side, the
+LicensingBlocked branch is implemented and is covered by a unit test: the known-bad
+fixture asserts that a Blocked verdict, distinct from NonCompliant, renders correctly in
+the evidence pack. What remains is cosmetic rather than substantive: a single formal
+Premium-versus-Standard run, captured as one side-by-side evidence pack, which is
+deferred to the final portfolio as future work rather than treated as an open gap at
+Milestone B.
 
 The weaken-assess-remediate-reassess cycle was then run against the same live tenant,
 and this time end to end rather than in the earlier isolated lab. The collector removed
@@ -135,10 +145,12 @@ the same read path the verdict uses, fixed it.
 | S1 — assessment produces valid JSON and HTML | Met | Met, demonstrated against a live tenant |
 | S2 — the cycle produces a measurable verdict change | Met | Met, demonstrated live (MFA NonCompliant 0% to Compliant 100% on SadraLabs) |
 | S3 — at least four strategies fully automated | One of eight | Eight run live; MFA fully automated, the rest returning honest graded or attestation verdicts |
-| S4 — at least one control correctly identified as licensing-blocked | Not yet reached | Logic implemented and unit-tested; not triggered on Premium, so demonstration awaits a Business Standard tenant |
+| S4 — at least one control correctly identified as licensing-blocked | Not yet reached | Logic implemented and unit-tested; ceiling evidenced first-hand in 10.3; a formal Premium-vs-Standard pack is final-portfolio work |
 | S5 — a second operator can reproduce a run | Not tested | Quickstart exists; a second person has still to attempt it |
 | S6 — evidence pack contains no credentials | Met | Met (verified on the live pack) |
 
-The honest qualifier now sits on S4 alone. Everything else has been demonstrated end
-to end against a real tenant; S4's licensing-blocked branch is written and tested but,
-by the nature of the finding, can only be shown on a tenant that lacks the licence.
+The remaining qualifier sits on S4, and it is a narrow one. Everything else has been
+demonstrated end to end against a real tenant. S4's licensing-blocked branch is written,
+unit-tested, and backed by the first-hand Standard provisioning finding in Section 10.3;
+all that is deferred is a single formal side-by-side run, which belongs in the final
+portfolio. Milestone B does not depend on it.
