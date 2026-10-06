@@ -80,18 +80,7 @@ tested as a matter of course rather than tripped over. Running the whole suite o
 editions at every commit is that test made routine. Each run also parse-checks every
 script before the tests, so a syntax error cannot reach the main branch unnoticed.
 
-## 10.8 Updated status against the success criteria
-
-| Criterion | At Milestone B | Now |
-|-----------|----------------|-----|
-| S1 — assessment produces valid JSON and HTML | Met | Met |
-| S2 — the cycle produces a measurable verdict change | Met | Met |
-| S3 — at least four strategies fully automated | One of eight | Eight scaffolded; one fully automated, the rest classified honestly and awaiting live validation |
-| S4 — at least one control correctly identified as licensing-blocked | Not yet reached | Implemented in the patch, macro and hardening collectors; awaiting live confirmation |
-| S5 — a second operator can reproduce a run | Not tested | A copy-paste live-run quickstart now exists; a second person has still to attempt it |
-| S6 — evidence pack contains no credentials | Met | Met |
-
-## 10.9 First live-tenant run
+## 10.8 First live-tenant run
 
 The eight collectors were then run end to end against the live lab tenant
 (SadraLabs.onmicrosoft.com, Business Premium). The pre-flight confirmed the tier and
@@ -126,12 +115,25 @@ exercised on a Premium tenant at all. Demonstrating criterion S4 requires runnin
 same collectors against a Business Standard tenant, where the licence genuinely is
 absent, and that is the comparison the licensing-ceiling analysis will rest on.
 
-## 10.10 Updated status against the success criteria
+The weaken-assess-remediate-reassess cycle was then run against the same live tenant,
+and this time end to end rather than in the earlier isolated lab. The collector removed
+the enforcing Conditional Access policy and, polling on the measured coverage until the
+directory had actually caught up, recorded NonCompliant at 0%. The policy was recreated
+with the break-glass account excluded, and the same collector then recorded Compliant at
+100% across the six assessable accounts. The before-and-after pair is the methodology's
+whole point: because the identical measurement ran at both ends, the change in verdict
+is attributable to the configuration change and nothing else. It also sharpened the
+propagation handling. An earlier attempt had the transition come out backwards, because
+the wait was polling the Conditional Access policy list, which updates on a faster Graph
+replica than the one the collector reads. Tying the wait to the measured coverage, by
+the same read path the verdict uses, fixed it.
+
+## 10.9 Updated status against the success criteria
 
 | Criterion | At Milestone B | Now |
 |-----------|----------------|-----|
 | S1 — assessment produces valid JSON and HTML | Met | Met, demonstrated against a live tenant |
-| S2 — the cycle produces a measurable verdict change | Met | Met (MFA 0% to 100% recorded earlier) |
+| S2 — the cycle produces a measurable verdict change | Met | Met, demonstrated live (MFA NonCompliant 0% to Compliant 100% on SadraLabs) |
 | S3 — at least four strategies fully automated | One of eight | Eight run live; MFA fully automated, the rest returning honest graded or attestation verdicts |
 | S4 — at least one control correctly identified as licensing-blocked | Not yet reached | Logic implemented and unit-tested; not triggered on Premium, so demonstration awaits a Business Standard tenant |
 | S5 — a second operator can reproduce a run | Not tested | Quickstart exists; a second person has still to attempt it |
