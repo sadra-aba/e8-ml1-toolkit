@@ -6,6 +6,8 @@ output/
 # the live config is created locally from lab.config.example.json
 config/lab.config.json
 config/lab.config.local.json
+config/lab.config.*.json
+!config/lab.config.example.json
 *.pfx
 *.cer
 *.pem
